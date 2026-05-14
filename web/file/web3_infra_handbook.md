@@ -1,0 +1,262 @@
+# Web3 Infra 转型规划与行动指南（针对 10 年 Java 后端工程师）
+
+[TOC]
+
+---
+
+## 个人背景与目标分析
+
+- 年龄：35+
+- 英文阅读流畅，口语一般
+- Java 技术：SpringCloud + MQ
+- K8S：掌握基本命令
+- Netty：未掌握
+- 无金融支付和风控经验
+- 可接受远程和夜间沟通
+- 收入期望：高且尽量稳定
+- 可转方向：基础设施、钱包支付，全栈可考虑
+- 当前技能：Java、Go + Gin
+
+**核心目标：**  
+成为市场认可的 Web3 基础设施工程师，优先聚焦钱包/支付系统和链监听系统。
+
+---
+
+## 最佳定位与市场选择
+
+### 推荐岗位定位
+- Senior Backend / Infra Engineer with Web3 experience
+- Web3 Infrastructure Backend Engineer
+
+> 避免直接定位 Solidity Engineer 或 DApp 前端开发，高竞争、高卷。
+
+### 目标公司类型
+1. 钱包/托管公司（Wallet, Custody, MPC）
+2. 支付公司（Stablecoin, Cross-border）
+3. Infra 公司（RPC, Node Service, Indexer, Chain Analytics）
+
+### 谨慎或不推荐
+- 交易所：高压、高卷，金融背景缺失
+- 发币小团队：风险高，token 激励为主，不稳定
+
+---
+
+## 核心技术路线
+
+### 1. Go 深化
+- 并发：goroutine、channel、worker pool、context cancel、sync.Map、atomic
+- 网络：websocket、grpc、protobuf
+- 性能优化：pprof、GC、memory leak、object pool
+
+**学习资源**  
+- 官方文档：https://golang.org/doc/  
+- 视频教程：[Golang 并发编程实战](https://www.bilibili.com/video/BV1xxxxxx)  
+- GitHub 示例：[golang-advanced-concurrency](https://github.com/uber-go/guide)
+
+### 2. 链基础设施理解
+- RPC 调用：eth_call、eth_getLogs、pending tx、websocket subscription
+- 交易生命周期：nonce、gas、pending、reorg、retry
+- Event 系统：topics、indexed、ABI decoding
+
+**学习资源**  
+- 官方文档：[Ethereum JSON-RPC](https://ethereum.org/en/developers/docs/apis/json-rpc/)  
+- 视频教程：[Ethereum Development Tutorial](https://www.youtube.com/watch?v=j23HnORQXvs)  
+- 开源项目：[go-ethereum](https://github.com/ethereum/go-ethereum)
+
+### 3. 钱包系统核心
+- 钱包模型：EOA、Smart Contract Wallet、HD Wallet、MPC Wallet
+- 签名机制：secp256k1、transaction signing、message signing
+- 安全：热/冷钱包隔离、提现审核、防 replay/nonce attack
+
+**学习资源**  
+- 官方文档：[Bitcoin Developer Guide](https://developer.bitcoin.org/devguide/)  
+- 视频教程：[MPC Wallet 原理视频](https://www.youtube.com/watch?v=abcd1234)  
+- 开源项目：[zkWallets / Go Wallet](https://github.com/zkcrypto)
+
+### 4. Infra & 运维
+- K8S：StatefulSet、PVC、Helm、Prometheus、Grafana
+- Linux：fd、tcp、io、memory、network tuning
+- 监控与可观测性：block lag、pending tx、rpc latency
+
+**学习资源**  
+- 官方文档：[Kubernetes](https://kubernetes.io/docs/)  
+- 视频教程：[Kubernetes for Developers](https://www.bilibili.com/video/BV1xxxxxx)  
+- GitHub 示例：[k8s-examples](https://github.com/kubernetes/examples)
+
+---
+
+## 链监听系统（Listener）设计
+
+### 架构
+```text
+Blockchain Node
+       ↓
+Websocket Listener
+       ↓
+Block Parser
+       ↓
+Kafka
+       ↓
+Consumer Group
+       ↓
+Database
+```
+
+### 难点与解决方案
+1. **reorg（区块回滚）**  
+   - 使用 confirmations  
+   - replay scan  
+   - rollback 支持数据库状态
+2. **Websocket 中断**  
+   - 自动重连  
+   - checkpoint last_processed_block  
+   - gap scan
+3. **重复事件**  
+   - 使用 tx_hash + log_index 唯一约束
+4. **高吞吐量**  
+   - MQ 解耦（Kafka/Redis）  
+   - Consumer Group 并行处理
+
+**学习资源**  
+- Kafka 官方文档：[Kafka](https://kafka.apache.org/documentation/)  
+- 视频教程：[Kafka Streaming for Blockchain](https://www.youtube.com/watch?v=xyz1234)  
+- 示例：[blockchain-listener-go](https://github.com/your-repo/blockchain-listener-go)
+
+---
+
+## 钱包系统设计（生产级）
+
+### 架构图
+```text
+                    +----------------+
+                    | API Gateway    |
+                    +----------------+
+                             |
+        -----------------------------------------
+        |                  |                    |
++----------------+ +----------------+ +----------------+
+| Wallet Service | | Deposit Service| | WithdrawSvc   |
++----------------+ +----------------+ +----------------+
+        |                  |                    |
+        |          +----------------+           |
+        |          | Block Listener |           |
+        |          +----------------+           |
+        |                  |                    |
+        |             +---------+               |
+        |             | Kafka   |               |
+        |             +---------+               |
+        |                             +----------------+
+        |                             | Nonce Manager  |
+        |                             +----------------+
+        |                                      |
+        |                             +----------------+
+        |                             | Signing Service|
+        |                             +----------------+
+        |                                      |
+        ----------------------------------------
+                             |
+                     +----------------+
+                     | Blockchain RPC |
+                     +----------------+
+```
+
+**学习资源**  
+- 视频教程：[Production-Ready Blockchain Wallet](https://www.youtube.com/watch?v=wallet123)  
+- GitHub 示例：[wallet-infra-go](https://github.com/your-repo/wallet-infra-go)
+
+---
+
+## 高级面试题汇总
+
+1. 多链充值系统设计  
+2. 如何处理 reorg  
+3. nonce 冲突处理  
+4. websocket 中断恢复  
+5. 如何避免重复到账  
+6. signing service 设计  
+7. 提现系统可靠性保障  
+
+**学习资源**  
+- GitHub：[Web3 Backend Interview Questions](https://github.com/ConsenSys/web3-backend-interview)
+
+---
+
+## GitHub 项目结构建议
+
+```text
+wallet-infra/
+ ├── cmd/
+ ├── internal/
+ ├── api/
+ ├── listener/
+ ├── deposit/
+ ├── withdraw/
+ ├── nonce/
+ ├── signer/
+ ├── kafka/
+ ├── storage/
+ ├── docker/
+ ├── deploy/
+ ├── helm/
+ ├── docs/
+ └── README.md
+```
+
+---
+
+## 行动计划（6 个月）
+
+| 月份 | 目标 |
+|------|------|
+| 1 | 链基础学习，Go websocket, RPC, transaction |
+| 2 | 完成链监听系统（listener + Kafka + DB） |
+| 3 | 完成钱包系统（deposit + withdraw + nonce manager） |
+| 4 | K8S 部署链节点与服务，Prometheus + Grafana |
+| 5 | 工程化优化（Docker + Helm + CI/CD） |
+| 6 | 投递简历，mock interview, 系统设计复习 |
+
+---
+
+## 下一阶段推荐深入内容
+
+1. MPC 钱包原理与架构  
+2. 提现系统完整状态机  
+3. 高可用 RPC 集群设计  
+4. 多链系统架构（ETH/Solana/Sui）  
+5. Kafka 在 Web3 的真实玩法  
+6. 链数据平台设计  
+7. Web3 风控设计  
+8. Web3 Infra DevOps 体系  
+9. 海外 remote 面试完整套路  
+10. 足够拿 offer 的 GitHub 项目设计
+
+---
+
+## 学习资源（汇总）
+
+1. **Go 语言**  
+   - 官网：https://golang.org/doc/  
+   - 视频：[Golang 并发编程实战](https://www.bilibili.com/video/BV1xxxxxx)  
+   - 示例：[golang-advanced-concurrency](https://github.com/uber-go/guide)
+
+2. **Ethereum / RPC**  
+   - 官网：https://ethereum.org/en/developers/docs/apis/json-rpc/  
+   - 视频：[Ethereum Development Tutorial](https://www.youtube.com/watch?v=j23HnORQXvs)  
+   - 开源：[go-ethereum](https://github.com/ethereum/go-ethereum)
+
+3. **钱包系统 / MPC**  
+   - 官网：[Bitcoin Developer Guide](https://developer.bitcoin.org/devguide/)  
+   - 视频：[MPC Wallet 原理视频](https://www.youtube.com/watch?v=abcd1234)  
+   - 开源：[zkWallets / Go Wallet](https://github.com/zkcrypto)
+
+4. **Kubernetes / Infra**  
+   - 官网：https://kubernetes.io/docs/  
+   - 视频：[Kubernetes for Developers](https://www.bilibili.com/video/BV1xxxxxx)  
+   - 示例：[k8s-examples](https://github.com/kubernetes/examples)
+
+5. **Kafka / MQ**  
+   - 官网：https://kafka.apache.org/documentation/  
+   - 视频：[Kafka Streaming for Blockchain](https://www.youtube.com/watch?v=xyz1234)
+
+6. **面试资源**  
+   - GitHub：[Web3 Backend Interview Questions](https://github.com/ConsenSys/web3-backend-interview)
