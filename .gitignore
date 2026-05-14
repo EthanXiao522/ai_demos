@@ -1,0 +1,11 @@
+.claude
+
+.github/*
+
+.vscode/*
+
+**/target/**
+
+**/test/**
+
+**/logs/**

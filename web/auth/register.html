@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h1 class="login-title">注册账号</h1>
+            <p class="login-subtitle">填写信息，创建您的账号</p>
+
+            <!-- 用户名 -->
+            <div class="input-group">
+                <label class="input-label" for="username">用户名</label>
+                <div class="password-input-wrapper">
+                    <input
+                        type="text"
+                        id="username"
+                        class="input-field"
+                        placeholder="请输入用户名"
+                        maxlength="20"
+                        autocomplete="username"
+                    >
+                </div>
+                <span class="error-msg" id="username-error"></span>
+            </div>
+
+            <!-- 性别 -->
+            <div class="input-group">
+                <label class="input-label">性别</label>
+                <div class="gender-group">
+                    <label class="gender-option">
+                        <input type="radio" name="gender" value="male">
+                        <span class="gender-radio"></span>
+                        <span class="gender-text">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="5" r="3"/>
+                                <path d="M12 9v8M8 14l4 4 4-4"/>
+                            </svg>
+                            男
+                        </span>
+                    </label>
+                    <label class="gender-option">
+                        <input type="radio" name="gender" value="female">
+                        <span class="gender-radio"></span>
+                        <span class="gender-text">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="5" r="3"/>
+                                <path d="M12 9v8M8 14l4 4 4-4"/>
+                            </svg>
+                            女
+                        </span>
+                    </label>
+                </div>
+                <span class="error-msg" id="gender-error"></span>
+            </div>
+
+            <!-- 手机号 -->
+            <div class="input-group">
+                <label class="input-label" for="phone">手机号</label>
+                <div class="phone-input-wrapper">
+                    <span class="country-code">+86</span>
+                    <input
+                        type="tel"
+                        id="phone"
+                        class="input-field"
+                        placeholder="请输入手机号"
+                        maxlength="11"
+                        autocomplete="tel"
+                    >
+                </div>
+                <span class="error-msg" id="phone-error"></span>
+            </div>
+
+            <!-- 密码 -->
+            <div class="input-group">
+                <label class="input-label" for="password">密码</label>
+                <div class="password-input-wrapper">
+                    <input
+                        type="password"
+                        id="password"
+                        class="input-field"
+                        placeholder="请设置密码（至少6位）"
+                        autocomplete="new-password"
+                    >
+                    <button type="button" class="toggle-password" id="toggle-password" aria-label="切换密码可见性">
+                        <svg class="eye-icon eye-off" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                            <path d="m14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                        <svg class="eye-icon eye-on" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <span class="error-msg" id="password-error"></span>
+            </div>
+
+            <!-- 滑动验证码 -->
+            <div class="captcha-group">
+                <label class="input-label">验证码</label>
+                <div class="slider-captcha" id="slider-captcha">
+                    <div class="slider-track">
+                        <div class="slider-progress" id="slider-progress"></div>
+                        <span class="slider-hint" id="slider-hint">请向右滑动滑块完成验证</span>
+                        <span class="slider-success-icon" id="slider-success-icon">&#10003;</span>
+                    </div>
+                    <div class="slider-thumb-wrapper" id="slider-thumb-wrapper">
+                        <button class="slider-thumb" id="slider-thumb" aria-label="滑动验证">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <span class="captcha-status" id="captcha-status"></span>
+            </div>
+
+            <!-- 注册按钮 -->
+            <button type="button" class="login-btn" id="register-btn" disabled>注 册</button>
+
+            <!-- 底部链接 -->
+            <div class="login-footer">
+                <span style="color: #888; font-size: 13px;">已有账号？</span>
+                <a href="login.html" class="footer-link">去登录</a>
+            </div>
+        </div>
+
+        <!-- Toast 提示 -->
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script src="register.js"></script>
+</body>
+</html>

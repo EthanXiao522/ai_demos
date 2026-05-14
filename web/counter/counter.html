@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计数器</title>
+    <link rel="stylesheet" href="counter.css">
+</head>
+<body>
+    <div class="counter-page">
+        <h1 class="counter-title">简单计数器</h1>
+
+        <div class="counter" id="page-counter">
+            <div class="counter-display">浏览次数: <span id="counter-value">0</span></div>
+            <div class="counter-controls">
+                <button id="counter-inc" class="counter-btn">+1</button>
+                <button id="counter-reset" class="counter-btn secondary">重置</button>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/auth/login.html" class="back-link">返回登录页</a>
+        </div>
+
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script src="counter.js"></script>
+</body>
+</html>
